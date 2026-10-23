@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Corrected Velocity)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Pure Focal Mechanics)</title>
     <style>
         body {
             margin: 0;
@@ -50,7 +50,7 @@
 
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
-        <p>Corrected Keplerian Velocity & Pericenter Acceleration (e = 0.8847)</p>
+        <p>Pure Polar Focal Mechanics & Dynamic Rosette Precession (e = 0.8847)</p>
     </div>
 
     <!-- Left Box: General Relativity -->
@@ -58,7 +58,7 @@
         <span class="box-title">General Relativity (GR) Frame</span>
         <span class="equation">Metric: g<sub>μν</sub> (Schwarzschild Geodesic Deviation)</span>
         <p><strong>Mechanics:</strong> Spacetime curvature drives non-closure of the elliptical orbit, producing ~12 arcmin Schwarzschild precession per cycle.</p>
-        <span class="telemetry-val" style="color: #79c0ff;">Precession Shift (Δω): +0.18° / orbit</span>
+        <span id="gr-telemetry" class="telemetry-val" style="color: #79c0ff;">Precession Shift (Δω): 0.00°</span>
     </div>
 
     <!-- Right Box: Entanglement-Entropy Relativity -->
@@ -69,17 +69,16 @@
         <span id="eer-telemetry" class="telemetry-val">Pericenter Strain (Υ): 0.00 | Lattice Friction: 0.00</span>
     </div>
 
-    <!-- Include Three.js & OrbitControls via CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 // Scene Setup
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x030508, 0.035);
+scene.fog = new THREE.FogExp2(0x030508, 0.025);
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 16, 22);
+camera.position.set(0, 22, 28);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -106,33 +105,24 @@ sgrA.position.set(0, 0, 0);
 scene.add(sgrA);
 
 // 2. Star S2
-const s2Geo = new THREE.SphereGeometry(0.32, 32, 32);
+const s2Geo = new THREE.SphereGeometry(0.35, 32, 32);
 const s2Mat = new THREE.MeshStandardMaterial({ color: 0x79c0ff, emissive: 0x79c0ff, emissiveIntensity: 0.9 });
 const s2Star = new THREE.Mesh(s2Geo, s2Mat);
 scene.add(s2Star);
 
-// 3. S2 Orbital Parameters (Eccentricity e = 0.8847)
-const p = 2.0; 
-const eccentricity = 0.8847;
+// 3. True Polar Orbital Parameters
+const p = 1.8; // Semi-latus rectum
+const eccentricity = 0.8847; // S2 true eccentricity
 
-// Generate reference orbit trace
-const curvePoints = [];
-for (let i = 0; i <= 200; i++) {
-    let theta = (i / 200) * Math.PI * 2;
-    let r = p / (1 + eccentricity * Math.cos(theta));
-    let focalDist = (p / (1 - eccentricity*eccentricity)) * eccentricity;
-    let x = r * Math.cos(theta) - focalDist + (p / (1 - eccentricity)); 
-    let z = r * Math.sin(theta);
-    curvePoints.push(new THREE.Vector3(x, 0, z));
-}
-const orbitGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+// Dynamic Orbital Trace
+const orbitGeo = new THREE.BufferGeometry();
 const orbitMat = new THREE.LineBasicMaterial({ color: 0x21262d });
 const orbitLine = new THREE.Line(orbitGeo, orbitMat);
 scene.add(orbitLine);
 
 // 4. Deformable Pseudomanifold Grid
-const gridDim = 28;
-const planeGeo = new THREE.PlaneGeometry(gridDim, gridDim, 32, 32);
+const gridDim = 38;
+const planeGeo = new THREE.PlaneGeometry(gridDim, gridDim, 40, 40);
 planeGeo.rotateX(-Math.PI / 2);
 
 const planeMat = new THREE.MeshStandardMaterial({
@@ -152,73 +142,39 @@ for (let i = 0; i < posAttribute.count; i++) {
 }
 
 const telemetryEER = document.getElementById('eer-telemetry');
+const telemetryGR = document.getElementById('gr-telemetry');
 
-// Animation Loop with Corrected Keplerian Velocity Profile (Fast at Pericenter, Slow at Apocenter)
-let meanAnomaly = 0;
-let cumulativePrecession = 0;
+// Animation State Variables
+let trueAnomaly = 0; 
+let omega = 0; // Argument of periapsis (precession angle)
+let lastAnomaly = 0;
 
 function animate() {
     requestAnimationFrame(animate);
     
-    // Mean anomaly increment scaled inversely by squared radius distance to simulate Kepler's Second Law
-    let currentR = p / (1 + eccentricity * Math.cos(meanAnomaly));
-    let angularSpeed = 0.003 * Math.pow((p / currentR), 2); 
-    meanAnomaly = (meanAnomaly + angularSpeed) % (Math.PI * 2);
-    
-    let trueAnomaly = meanAnomaly;
+    // 1. Kepler's Second Law Integration (d(theta)/dt = h / r^2)
+    // S2 whips around pericenter extremely fast, and crawls at apocenter
+    let r_current = p / (1 + eccentricity * Math.cos(trueAnomaly));
+    let angularSpeed = 0.025 / (r_current * r_current); 
+    trueAnomaly += angularSpeed;
 
-    if (trueAnomaly < 0.02) {
-        cumulativePrecession += 0.04;
+    // Detect orbit completion (pericenter crossing) to tick the rosette precession
+    if (lastAnomaly > Math.PI && trueAnomaly % (Math.PI * 2) < Math.PI) {
+        omega += 0.08; // Artificial precession boost for visualization
     }
+    lastAnomaly = trueAnomaly % (Math.PI * 2);
 
-    let r = p / (1 + eccentricity * Math.cos(trueAnomaly));
-    let focalDist = (p / (1 - eccentricity*eccentricity)) * eccentricity;
-    let periApsesFix = p / (1 - eccentricity);
+    let currentTheta = trueAnomaly % (Math.PI * 2);
+    let r = p / (1 + eccentricity * Math.cos(currentTheta));
 
-    let unrotatedX = r * Math.cos(trueAnomaly) - focalDist + periApsesFix;
-    let unrotatedZ = r * Math.sin(trueAnomaly);
+    // Pure polar to Cartesian (focus inherently locked at origin)
+    let x_unrotated = r * Math.cos(currentTheta);
+    let z_unrotated = r * Math.sin(currentTheta);
 
-    // Apply rosette precession rotation around origin (0,0,0)
-    let s2X = unrotatedX * Math.cos(cumulativePrecession) - unrotatedZ * Math.sin(cumulativePrecession);
-    let s2Z = unrotatedX * Math.sin(cumulativePrecession) + unrotatedZ * Math.cos(cumulativePrecession);
+    // Apply Argument of Periapsis (Rosette Precession)
+    let s2X = x_unrotated * Math.cos(omega) - z_unrotated * Math.sin(omega);
+    let s2Z = x_unrotated * Math.sin(omega) + z_unrotated * Math.cos(omega);
     
     s2Star.position.set(s2X, 0, s2Z);
 
-    // EER Telemetry based on distance from core at origin
-    let distToCore = Math.sqrt(s2X * s2X + s2Z * s2Z);
-    let capacityStrain = Math.max(0, 1.0 - (distToCore / 3.5));
-    let latticeFriction = Math.pow(capacityStrain, 3) * 3.2;
-
-    telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
-    coreMat.emissiveIntensity = 0.5 + capacityStrain * 1.8;
-
-    // Dynamic grid lattice deformation
-    for (let i = 0; i < posAttribute.count; i++) {
-        let vx = posAttribute.getX(i);
-        let vz = posAttribute.getZ(i);
-        
-        let distCore = Math.sqrt(vx * vx + vz * vz);
-        let distS2 = Math.sqrt(Math.pow(vx - s2X, 2) + Math.pow(vz - s2Z, 2));
-        
-        let coreDeflection = Math.max(0, (4.5 - distCore)) * 1.1 * (1.0 + capacityStrain * 0.4);
-        let s2Deflection = Math.max(0, (1.6 - distS2)) * (0.15 + capacityStrain * 0.5);
-        
-        posAttribute.setY(i, initialY[i] - coreDeflection - s2Deflection);
-    }
-    posAttribute.needsUpdate = true;
-
-    controls.update();
-    renderer.render(scene, camera);
-}
-
-animate();
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-</script>
-
-</body>
-</html>
+    // Dynamically update the visual
