@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Pure Focal Mechanics)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (5x Speed)</title>
     <style>
         body {
             margin: 0;
@@ -135,46 +135,4 @@ const planeMat = new THREE.MeshStandardMaterial({
 const gridMesh = new THREE.Mesh(planeGeo, planeMat);
 scene.add(gridMesh);
 
-const posAttribute = planeGeo.attributes.position;
-const initialY = [];
-for (let i = 0; i < posAttribute.count; i++) {
-    initialY.push(posAttribute.getY(i));
-}
-
-const telemetryEER = document.getElementById('eer-telemetry');
-const telemetryGR = document.getElementById('gr-telemetry');
-
-// Animation State Variables
-let trueAnomaly = 0; 
-let omega = 0; // Argument of periapsis (precession angle)
-let lastAnomaly = 0;
-
-function animate() {
-    requestAnimationFrame(animate);
-    
-    // 1. Kepler's Second Law Integration (d(theta)/dt = h / r^2)
-    // S2 whips around pericenter extremely fast, and crawls at apocenter
-    let r_current = p / (1 + eccentricity * Math.cos(trueAnomaly));
-    let angularSpeed = 0.025 / (r_current * r_current); 
-    trueAnomaly += angularSpeed;
-
-    // Detect orbit completion (pericenter crossing) to tick the rosette precession
-    if (lastAnomaly > Math.PI && trueAnomaly % (Math.PI * 2) < Math.PI) {
-        omega += 0.08; // Artificial precession boost for visualization
-    }
-    lastAnomaly = trueAnomaly % (Math.PI * 2);
-
-    let currentTheta = trueAnomaly % (Math.PI * 2);
-    let r = p / (1 + eccentricity * Math.cos(currentTheta));
-
-    // Pure polar to Cartesian (focus inherently locked at origin)
-    let x_unrotated = r * Math.cos(currentTheta);
-    let z_unrotated = r * Math.sin(currentTheta);
-
-    // Apply Argument of Periapsis (Rosette Precession)
-    let s2X = x_unrotated * Math.cos(omega) - z_unrotated * Math.sin(omega);
-    let s2Z = x_unrotated * Math.sin(omega) + z_unrotated * Math.cos(omega);
-    
-    s2Star.position.set(s2X, 0, s2Z);
-
-    // Dynamically update the visual
+const pos
