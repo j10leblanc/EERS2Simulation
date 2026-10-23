@@ -162,4 +162,72 @@ function animate() {
     if (lastAnomaly > (Math.PI * 2) && trueAnomaly % (Math.PI * 2) < Math.PI) {
         omega += 0.08; // Precession visualization
     }
-    last
+    lastAnomaly = trueAnomaly % (Math.PI * 2) === 0 ? lastAnomaly : trueAnomaly;
+
+    let currentTheta = trueAnomaly % (Math.PI * 2);
+    let r = p / (1 + eccentricity * Math.cos(currentTheta));
+
+    // Pure polar to Cartesian (focus locked at origin)
+    let x_unrotated = r * Math.cos(currentTheta);
+    let z_unrotated = r * Math.sin(currentTheta);
+
+    // Apply Argument of Periapsis (Rosette Precession Rotation)
+    let s2X = x_unrotated * Math.cos(omega) - z_unrotated * Math.sin(omega);
+    let s2Z = x_unrotated * Math.sin(omega) + z_unrotated * Math.cos(omega);
+    
+    s2Star.position.set(s2X, 0, s2Z);
+
+    // Dynamically update the visual orbit trace to match precession
+    const curvePoints = [];
+    for (let i = 0; i <= 200; i++) {
+        let t = (i / 200) * Math.PI * 2;
+        let trace_r = p / (1 + eccentricity * Math.cos(t));
+        let tx_unrotated = trace_r * Math.cos(t);
+        let tz_unrotated = trace_r * Math.sin(t);
+        let tx = tx_unrotated * Math.cos(omega) - tz_unrotated * Math.sin(omega);
+        let tz = tx_unrotated * Math.sin(omega) + tz_unrotated * Math.cos(omega);
+        curvePoints.push(new THREE.Vector3(tx, 0, tz));
+    }
+    orbitGeo.setFromPoints(curvePoints);
+
+    // Telemetry Updates
+    let distToCore = Math.sqrt(s2X * s2X + s2Z * s2Z);
+    let capacityStrain = Math.max(0, 1.0 - (distToCore / 8.0));
+    let latticeFriction = Math.pow(capacityStrain, 3) * 4.5;
+
+    telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
+    telemetryGR.innerText = `Precession Shift (Δω): +${(omega * (180/Math.PI)).toFixed(2)}°`;
+    
+    coreMat.emissiveIntensity = 0.5 + capacityStrain * 2.0;
+
+    // Dynamic grid lattice deformation
+    for (let i = 0; i < posAttribute.count; i++) {
+        let vx = posAttribute.getX(i);
+        let vz = posAttribute.getZ(i);
+        
+        let distCore = Math.sqrt(vx * vx + vz * vz);
+        let distS2 = Math.sqrt(Math.pow(vx - s2X, 2) + Math.pow(vz - s2Z, 2));
+        
+        let coreDeflection = Math.max(0, (4.5 - distCore)) * 1.1 * (1.0 + capacityStrain * 0.4);
+        let s2Deflection = Math.max(0, (1.6 - distS2)) * (0.15 + capacityStrain * 0.5);
+        
+        posAttribute.setY(i, initialY[i] - coreDeflection - s2Deflection);
+    }
+    posAttribute.needsUpdate = true;
+
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+// Initial draw before loop starts
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
