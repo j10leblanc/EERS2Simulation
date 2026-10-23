@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (State Equivalency)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Live State Translation)</title>
     <style>
         body {
             margin: 0;
@@ -40,7 +40,7 @@
         #eer-box { bottom: 20px; right: 20px; width: 380px; border-left: 3px solid #33ff88; }
         
         /* Top Equivalency Matrix */
-        #equiv-box { top: 20px; right: 20px; width: 300px; border-left: 3px solid #d2a8ff; }
+        #equiv-box { top: 20px; right: 20px; width: 340px; border-left: 3px solid #d2a8ff; }
         
         .box-title { font-weight: bold; font-size: 13px; margin-bottom: 6px; display: block; }
         #gr-box .box-title { color: #79c0ff; }
@@ -56,6 +56,7 @@
         .equiv-gr { color: #79c0ff; text-align: right; width: 45%; font-family: monospace;}
         .equiv-eer { color: #33ff88; text-align: left; width: 45%; font-family: monospace;}
         .equiv-arrow { color: #8b949e; width: 10%; text-align: center; }
+        .equiv-desc { margin-top: 10px; font-size: 10px; color: #8b949e; text-align: center; border-top: 1px dashed #30363d; padding-top: 8px;}
     </style>
 </head>
 <body>
@@ -65,28 +66,26 @@
         <p>Exact Ephemeris: e = 0.8847 | True Precession = 12 arcmin (0.2°) per orbit</p>
     </div>
 
-    <!-- Top Right: Translation Matrix -->
+    <!-- Top Right: Live Translation Matrix -->
     <div id="equiv-box" class="hud-box">
-        <span class="box-title">GR ⇌ EER State Equivalency</span>
+        <span class="box-title">Live State Translation (GR ⇌ EER)</span>
         <div class="equiv-row">
-            <span class="equiv-gr">Metric Tensor (g<sub>μν</sub>)</span>
+            <span class="equiv-gr">r: <span id="gr-r">0.0000</span></span>
             <span class="equiv-arrow">⇌</span>
-            <span class="equiv-eer">Capacity Strain (Υ)</span>
+            <span class="equiv-eer">Depth: <span id="eer-d">0</span></span>
         </div>
         <div class="equiv-row">
-            <span class="equiv-gr">Continuous Geodesic</span>
+            <span class="equiv-gr">θ: <span id="gr-theta">0.0000</span> rad</span>
             <span class="equiv-arrow">⇌</span>
-            <span class="equiv-eer">Discrete Instantiation</span>
+            <span class="equiv-eer">Sector: <span id="eer-sec">0</span></span>
         </div>
         <div class="equiv-row">
-            <span class="equiv-gr">Stress-Energy (T<sub>μν</sub>)</span>
+            <span class="equiv-gr">v: <span id="gr-v">0.0000</span></span>
             <span class="equiv-arrow">⇌</span>
-            <span class="equiv-eer">Core Saturation (σ<sub>LB</sub>)</span>
+            <span class="equiv-eer">Inst/Tick: <span id="eer-inst">0</span></span>
         </div>
-        <div class="equiv-row">
-            <span class="equiv-gr">Anomalous Shift (Δω)</span>
-            <span class="equiv-arrow">⇌</span>
-            <span class="equiv-eer">Friction Asymmetry</span>
+        <div class="equiv-desc">
+            Mapping continuous floating-point spacetime geometry (GR) to discrete lattice state-instantiations (EER Bit Perfection).
         </div>
     </div>
 
@@ -191,10 +190,18 @@ const clock = new THREE.Clock();
 const telemetryEER = document.getElementById('eer-telemetry');
 const telemetryGR = document.getElementById('gr-telemetry');
 
+// Live Translation Variables
+let lastS2X = null;
+let lastS2Z = null;
+let lastTime = 0;
+
 function animate() {
     requestAnimationFrame(animate);
     
     let time = clock.getElapsedTime();
+    let dt = time - lastTime;
+    if (dt === 0) dt = 0.016; // prevent div by zero on init
+
     let M = (Math.PI * 2 / period) * time;
     let E = solveKepler(M, e);
     
@@ -208,6 +215,33 @@ function animate() {
     let s2Z = x0 * Math.sin(omega) + z0 * Math.cos(omega);
     
     s2Star.position.set(s2X, 0, s2Z);
+
+    // --- LIVE TRANSLATION MATH (GR Continuous vs EER Discrete) ---
+    let currentR = Math.sqrt(s2X * s2X + s2Z * s2Z);
+    let currentTheta = Math.atan2(s2Z, s2X);
+    if (currentTheta < 0) currentTheta += 2 * Math.PI;
+
+    let v = 0;
+    if (lastS2X !== null) {
+        let dx = s2X - lastS2X;
+        let dz = s2Z - lastS2Z;
+        v = Math.sqrt(dx*dx + dz*dz) / dt;
+    }
+
+    // GR Output (Continuous floats)
+    document.getElementById('gr-r').innerText = currentR.toFixed(4);
+    document.getElementById('gr-theta').innerText = currentTheta.toFixed(4);
+    document.getElementById('gr-v').innerText = v.toFixed(4);
+
+    // EER Output (Discrete Bit Perfection Integers - quantizing the lattice)
+    document.getElementById('eer-d').innerText = Math.round(currentR * 100000);
+    document.getElementById('eer-sec').innerText = Math.round(currentTheta * 100000);
+    document.getElementById('eer-inst').innerText = Math.round(v * 100000);
+
+    lastS2X = s2X;
+    lastS2Z = s2Z;
+    lastTime = time;
+    // -------------------------------------------------------------
 
     if (trailCount < MAX_TRAIL_POINTS) {
         trailPositions[trailCount * 3] = s2X;
@@ -223,8 +257,7 @@ function animate() {
     }
     trailGeo.attributes.position.needsUpdate = true;
 
-    let distToCore = Math.sqrt(s2X * s2X + s2Z * s2Z);
-    let capacityStrain = Math.max(0, 1.2 / distToCore); 
+    let capacityStrain = Math.max(0, 1.2 / currentR); 
     let latticeFriction = Math.pow(capacityStrain, 2) * 5.0;
 
     telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
