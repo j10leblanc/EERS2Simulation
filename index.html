@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (5x Speed)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Clean Slate)</title>
     <style>
         body {
             margin: 0;
@@ -111,7 +111,7 @@ const s2Star = new THREE.Mesh(s2Geo, s2Mat);
 scene.add(s2Star);
 
 // 3. True Polar Orbital Parameters
-const p = 1.8; // Semi-latus rectum
+const p = 1.8; // Semi-latus rectum scaling
 const eccentricity = 0.8847; // S2 true eccentricity
 
 // Dynamic Orbital Trace
@@ -135,4 +135,31 @@ const planeMat = new THREE.MeshStandardMaterial({
 const gridMesh = new THREE.Mesh(planeGeo, planeMat);
 scene.add(gridMesh);
 
-const pos
+const posAttribute = planeGeo.attributes.position;
+const initialY = [];
+for (let i = 0; i < posAttribute.count; i++) {
+    initialY.push(posAttribute.getY(i));
+}
+
+const telemetryEER = document.getElementById('eer-telemetry');
+const telemetryGR = document.getElementById('gr-telemetry');
+
+// Clean Initial Animation State (Starting at Apocenter to watch the fall)
+let trueAnomaly = Math.PI; 
+let omega = 0; // Argument of periapsis (precession angle)
+let lastAnomaly = Math.PI;
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // 1. Kepler's Second Law Integration (d(theta)/dt = h / r^2) 
+    // Set to 5x speed coefficient
+    let r_current = p / (1 + eccentricity * Math.cos(trueAnomaly));
+    let angularSpeed = 0.125 / (r_current * r_current); 
+    trueAnomaly += angularSpeed;
+
+    // Detect orbit completion (pericenter crossing) to tick the rosette precession
+    if (lastAnomaly > (Math.PI * 2) && trueAnomaly % (Math.PI * 2) < Math.PI) {
+        omega += 0.08; // Precession visualization
+    }
+    last
