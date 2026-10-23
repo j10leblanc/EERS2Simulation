@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Live State Translation & Terminology)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Holographic Saturation)</title>
     <style>
         body {
             margin: 0;
@@ -87,7 +87,7 @@
         </div>
         <div class="def-row">
             <span class="def-term">Inst/Tick (Instantiations)</span>
-            <span class="def-desc">State-updates per causal network tick. Motion is not continuous translation, but discrete instantiations. Replaces continuous velocity (v).</span>
+            <span class="def-desc">State-updates per causal network tick. Motion is not continuous translation, but discrete instantiations. Replaces velocity (v).</span>
         </div>
     </div>
 
@@ -125,9 +125,9 @@
     <!-- Right Box: Entanglement-Entropy Relativity -->
     <div id="eer-box" class="hud-box">
         <span class="box-title">Entanglement-Entropy Relativity (EER) - Absolute Saturation</span>
-        <span class="equation">Strain: Υ<sub>SgrA*</sub> ≈ Υ<sub>LB</sub> | Friction Gradient: ∇σ</span>
-        <p><strong>Mechanics:</strong> Sgr A* is a saturated core node operating at the absolute capacity limit (σ<sub>LB</sub>). Extreme friction gradients at pericenter force rapid, discrete state-instantiations.</p>
-        <span id="eer-telemetry" class="telemetry-val">Pericenter Strain (Υ): 0.00 | Lattice Friction: 0.00</span>
+        <span class="equation">Strain: Υ<sub>SgrA*</sub> ≈ 1 PIU / 4ℓ<sub>p</sub>² | Gradient: ∇σ</span>
+        <p><strong>Mechanics:</strong> Sgr A* is not a singularity. It is a 2D holographic horizon saturated at the absolute LeBlanc Bound (1 PIU / 4ℓ<sub>p</sub>²). Extreme friction forces rapid state-instantiations at pericenter.</p>
+        <span id="eer-telemetry" class="telemetry-val">Strain (Υ): 0.00 | Lattice Friction: 0.00</span>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -225,7 +225,7 @@ function animate() {
     
     let time = clock.getElapsedTime();
     let dt = time - lastTime;
-    if (dt === 0) dt = 0.016; // prevent div by zero on init
+    if (dt === 0) dt = 0.016; 
 
     let M = (Math.PI * 2 / period) * time;
     let E = solveKepler(M, e);
@@ -253,12 +253,10 @@ function animate() {
         v = Math.sqrt(dx*dx + dz*dz) / dt;
     }
 
-    // GR Output (Continuous floats)
     document.getElementById('gr-r').innerText = currentR.toFixed(4);
     document.getElementById('gr-theta').innerText = currentTheta.toFixed(4);
     document.getElementById('gr-v').innerText = v.toFixed(4);
 
-    // EER Output (Discrete Bit Perfection Integers - quantizing the lattice)
     document.getElementById('eer-d').innerText = Math.round(currentR * 100000);
     document.getElementById('eer-sec').innerText = Math.round(currentTheta * 100000);
     document.getElementById('eer-inst').innerText = Math.round(v * 100000);
@@ -282,10 +280,11 @@ function animate() {
     }
     trailGeo.attributes.position.needsUpdate = true;
 
-    let capacityStrain = Math.max(0, 1.2 / currentR); 
+    // Capacity Strain modeled geometrically to scale 0 to ~1 (LeBlanc Bound)
+    let capacityStrain = Math.max(0, Math.min(1.0, 1.2 / currentR)); 
     let latticeFriction = Math.pow(capacityStrain, 2) * 5.0;
 
-    telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
+    telemetryEER.innerText = `Strain (Υ): ${capacityStrain.toFixed(4)} PIU/4ℓp² | Friction: ${latticeFriction.toFixed(4)}`;
     telemetryGR.innerText = `Cumulative Precession (Δω): +${(omega * (180 / Math.PI)).toFixed(3)}°`;
     
     coreMat.emissiveIntensity = 0.6 + capacityStrain * 2.5;
