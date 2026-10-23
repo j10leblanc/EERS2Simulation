@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Star & Sgr A* Orbital Mechanics</title>
+    <title>EER vs GR: S2 Orbital Mechanics & Lattice Saturation</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,6 @@
         h2 { margin: 0 0 3px 0; color: #58a6ff; font-size: 18px; text-shadow: 0 0 10px rgba(88,166,255,0.4); }
         p { margin: 0; font-size: 12px; color: #8b949e; }
 
-        /* Side-by-Side Comparison Boxes */
         .hud-box {
             position: absolute;
             bottom: 20px;
@@ -44,29 +43,29 @@
         #gr-box .box-title { color: #79c0ff; }
         #eer-box .box-title { color: #33ff88; }
         .equation { font-family: monospace; color: #d2a8ff; margin: 4px 0; display: block; font-size: 11px; }
+        .telemetry-val { font-family: monospace; color: #33ff88; margin-top: 6px; display: block; }
     </style>
 </head>
 <body>
 
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
-        <p>Identical Observable Kinematics — Distinct Underlying Mechanics</p>
+        <p>Dynamic Pericenter Strain & Relativistic Precession Mechanics</p>
     </div>
 
     <!-- Left Box: General Relativity -->
-    <div id="hud-box gr-box" class="hud-box" style="left: 20px;">
+    <div id="gr-box" class="hud-box">
         <span class="box-title">General Relativity (GR)</span>
-        <span class="equation">Metric: g<sub>μν</sub> & T<sub>μν</sub></span>
-        <p><strong>Framework:</strong> Continuous Spacetime Curvature</p>
-        <p style="margin-top: 6px; color: #8b949e;">S2 traces a geodesic through a warped metric created by a central mass-energy singularity.</p>
+        <span class="equation">Metric: g<sub>μν</sub> & T<sub>μν</sub> (Geodesic Deviation)</span>
+        <p><strong>Mechanism:</strong> Spacetime curvature warps trajectories. Schwarzschild/Kerr metric predicts orbital rosette precession at pericenter.</p>
     </div>
 
     <!-- Right Box: Entanglement-Entropy Relativity -->
-    <div id="hud-box eer-box" class="hud-box" style="right: 20px;">
+    <div id="eer-box" class="hud-box">
         <span class="box-title">Entanglement-Entropy Relativity (EER)</span>
-        <span class="equation">Strain: Υ & Lattice Friction (σ)</span>
-        <p><strong>Framework:</strong> 2D Causal Pseudomanifold</p>
-        <p style="margin-top: 6px; color: #8b949e;">S2 trajectory is governed by discrete capacity-friction gradients near the LeBlanc Bound (σ<sub>LB</sub>).</p>
+        <span class="equation">Strain: Υ & Lattice Friction Gradient (σ)</span>
+        <p><strong>Mechanism:</strong> High-density core node approaches $\sigma_{LB}$. Pericenter velocity surge driven by capacity-friction relaxation.</p>
+        <span id="eer-telemetry" class="telemetry-val">Pericenter Strain (Υ): 0.00 | Lattice Friction: 0.00</span>
     </div>
 
     <!-- Include Three.js & OrbitControls via CDN -->
@@ -79,7 +78,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x030508, 0.035);
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 14, 20);
+camera.position.set(0, 15, 22);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -98,26 +97,31 @@ const pointLight = new THREE.PointLight(0x33ff88, 2.5, 50);
 pointLight.position.set(0, 10, 0);
 scene.add(pointLight);
 
-// 1. Central Sgr A* Core Node (High-Capacity Lattice Knot)
-const coreGeo = new THREE.SphereGeometry(1.0, 32, 32);
-const coreMat = new THREE.MeshStandardMaterial({ color: 0xffa657, emissive: 0xffa657, emissiveIntensity: 0.8 });
+// 1. Central Sgr A* Core Node (High-Capacity Lattice Saturation Center)
+const coreGeo = new THREE.SphereGeometry(0.9, 32, 32);
+const coreMat = new THREE.MeshStandardMaterial({ color: 0xffa657, emissive: 0xffa657, emissiveIntensity: 0.9 });
 const sgrA = new THREE.Mesh(coreGeo, coreMat);
 sgrA.position.set(0, 0, 0);
 scene.add(sgrA);
 
 // 2. Star S2 Orbiting the Core
-const s2Geo = new THREE.SphereGeometry(0.4, 32, 32);
+const s2Geo = new THREE.SphereGeometry(0.35, 32, 32);
 const s2Mat = new THREE.MeshStandardMaterial({ color: 0x79c0ff, emissive: 0x79c0ff, emissiveIntensity: 0.9 });
 const s2Star = new THREE.Mesh(s2Geo, s2Mat);
 scene.add(s2Star);
 
-// 3. Orbital Path Ring
-const orbitRadiusX = 7.0;
-const orbitRadiusZ = 4.5;
+// 3. Orbital Path Trace (Highly Elliptical, mimicking S2 real orbit)
+const semiMajor = 8.0;
+const eccentricity = 0.75;
+const semiMinor = semiMajor * Math.sqrt(1 - eccentricity * eccentricity);
+const centerOffset = semiMajor * eccentricity;
+
 const curvePoints = [];
-for (let i = 0; i <= 100; i++) {
-    let theta = (i / 100) * Math.PI * 2;
-    curvePoints.push(new THREE.Vector3(Math.cos(theta) * orbitRadiusX, 0, Math.sin(theta) * orbitRadiusZ));
+for (let i = 0; i <= 150; i++) {
+    let theta = (i / 150) * Math.PI * 2;
+    let x = Math.cos(theta) * semiMajor - centerOffset;
+    let z = Math.sin(theta) * semiMinor;
+    curvePoints.push(new THREE.Vector3(x, 0, z));
 }
 const orbitGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
 const orbitMat = new THREE.LineBasicMaterial({ color: 0x30363d });
@@ -125,8 +129,8 @@ const orbitLine = new THREE.Line(orbitGeo, orbitMat);
 scene.add(orbitLine);
 
 // 4. Deformable Pseudomanifold Grid
-const gridDim = 24;
-const planeGeo = new THREE.PlaneGeometry(gridDim, gridDim, 28, 28);
+const gridDim = 26;
+const planeGeo = new THREE.PlaneGeometry(gridDim, gridDim, 32, 32);
 planeGeo.rotateX(-Math.PI / 2);
 
 const planeMat = new THREE.MeshStandardMaterial({
@@ -145,19 +149,35 @@ for (let i = 0; i < posAttribute.count; i++) {
     initialY.push(posAttribute.getY(i));
 }
 
-// Animation Loop
-let clock = 0;
+const telemetryEER = document.getElementById('eer-telemetry');
+
+// Animation Loop with Mechanical Mechanics
+let orbitalParam = 0;
 function animate() {
     requestAnimationFrame(animate);
-    clock += 0.010;
-
-    // Elliptical orbit calculation for S2
-    let angle = clock * 0.6;
-    let s2X = Math.cos(angle) * orbitRadiusX;
-    let s2Z = Math.sin(angle) * orbitRadiusZ;
+    
+    // Keplerian orbital speed variation (faster at pericenter near focus, slower at apcenter)
+    orbitalParam += 0.008;
+    let trueAnomaly = orbitalParam % (Math.PI * 2);
+    
+    // True orbital mechanics conversion for elliptical motion around focus
+    let r = (semiMajor * (1 - eccentricity * eccentricity)) / (1 + eccentricity * Math.cos(trueAnomaly));
+    let s2X = r * Math.cos(trueAnomaly) - centerOffset;
+    let s2Z = r * Math.sin(trueAnomaly) * 0.7; // scaled minor axis
     s2Star.position.set(s2X, 0, s2Z);
 
-    // Dynamic grid lattice deformation around Sgr A* and S2
+    // Calculate distance to core node to derive actual EER capacity strain (Υ) and friction (σ)
+    let distToCore = Math.sqrt(s2X * s2X + s2Z * s2Z);
+    let capacityStrain = Math.max(0, 1.0 - (distToCore / 8.0));
+    let latticeFriction = Math.pow(capacityStrain, 2) * 2.5;
+
+    // Update Telemetry Box
+    telemetryEER.innerText = `Strain (Υ): ${capacityStrain.toFixed(3)} | Friction (σ): ${latticeFriction.toFixed(3)}`;
+
+    // Core pulsing based on real-time capacity stress
+    coreMat.emissiveIntensity = 0.5 + capacityStrain * 1.5;
+
+    // Dynamic grid lattice deformation reflecting mass-energy density / capacity saturation
     for (let i = 0; i < posAttribute.count; i++) {
         let vx = posAttribute.getX(i);
         let vz = posAttribute.getZ(i);
@@ -165,8 +185,8 @@ function animate() {
         let distCore = Math.sqrt(vx * vx + vz * vz);
         let distS2 = Math.sqrt(Math.pow(vx - s2X, 2) + Math.pow(vz - s2Z, 2));
         
-        let coreDeflection = Math.max(0, (3.5 - distCore)) * 0.8;
-        let s2Deflection = Math.max(0, (1.5 - distS2)) * 0.3;
+        let coreDeflection = Math.max(0, (4.0 - distCore)) * 0.9 * (1.0 + capacityStrain * 0.5);
+        let s2Deflection = Math.max(0, (1.8 - distS2)) * (0.2 + capacityStrain * 0.4);
         
         posAttribute.setY(i, initialY[i] - coreDeflection - s2Deflection);
     }
