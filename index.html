@@ -125,8 +125,8 @@
     <!-- Right Box: Entanglement-Entropy Relativity -->
     <div id="eer-box" class="hud-box">
         <span class="box-title">Entanglement-Entropy Relativity (EER) - Absolute Saturation</span>
-        <span class="equation">Strain: Υ<sub>SgrA*</sub> ≈ 1 PIU / 4ℓ<sub>p</sub>² | Gradient: ∇σ</span>
-        <p><strong>Mechanics:</strong> Sgr A* is not a singularity. It is a 2D holographic horizon saturated at the absolute LeBlanc Bound (1 PIU / 4ℓ<sub>p</sub>²). Extreme friction forces rapid state-instantiations at pericenter.</p>
+        <span class="equation">Strain: Υ<sub>SgrA*</sub> ≈ 1 Υ / 4ℓ<sub>p</sub>² | Gradient: ∇σ</span>
+        <p><strong>Mechanics:</strong> Sgr A* is not a singularity. It is a 2D holographic horizon saturated at the absolute LeBlanc Bound (1 Υ / 4ℓ<sub>p</sub>²). Extreme friction forces rapid state-instantiations at pericenter.</p>
         <span id="eer-telemetry" class="telemetry-val">Strain (Υ): 0.00 | Lattice Friction: 0.00</span>
     </div>
 
@@ -284,7 +284,7 @@ function animate() {
     let capacityStrain = Math.max(0, Math.min(1.0, 1.2 / currentR)); 
     let latticeFriction = Math.pow(capacityStrain, 2) * 5.0;
 
-    telemetryEER.innerText = `Strain (Υ): ${capacityStrain.toFixed(4)} PIU/4ℓp² | Friction: ${latticeFriction.toFixed(4)}`;
+    telemetryEER.innerText = `Strain (Υ): ${capacityStrain.toFixed(4)} Υ/4ℓp² | Friction: ${latticeFriction.toFixed(3)}`;
     telemetryGR.innerText = `Cumulative Precession (Δω): +${(omega * (180 / Math.PI)).toFixed(3)}°`;
     
     coreMat.emissiveIntensity = 0.6 + capacityStrain * 2.5;
