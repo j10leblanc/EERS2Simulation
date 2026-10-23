@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Verified Focus)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Corrected Velocity)</title>
     <style>
         body {
             margin: 0;
@@ -50,7 +50,7 @@
 
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
-        <p>Verified Pericenter Origin Lock (e = 0.8847)</p>
+        <p>Corrected Keplerian Velocity & Pericenter Acceleration (e = 0.8847)</p>
     </div>
 
     <!-- Left Box: General Relativity -->
@@ -112,16 +112,14 @@ const s2Star = new THREE.Mesh(s2Geo, s2Mat);
 scene.add(s2Star);
 
 // 3. S2 Orbital Parameters (Eccentricity e = 0.8847)
-const p = 2.0; // semi-latus rectum scaling factor
+const p = 2.0; 
 const eccentricity = 0.8847;
 
-// Generate reference orbit trace anchored with focus at origin
+// Generate reference orbit trace
 const curvePoints = [];
 for (let i = 0; i <= 200; i++) {
     let theta = (i / 200) * Math.PI * 2;
     let r = p / (1 + eccentricity * Math.cos(theta));
-    // Standard polar conversion with focus at origin:
-    // shift x by subtracting semi-focal distance so pericenter (theta=0) hits origin
     let focalDist = (p / (1 - eccentricity*eccentricity)) * eccentricity;
     let x = r * Math.cos(theta) - focalDist + (p / (1 - eccentricity)); 
     let z = r * Math.sin(theta);
@@ -155,16 +153,20 @@ for (let i = 0; i < posAttribute.count; i++) {
 
 const telemetryEER = document.getElementById('eer-telemetry');
 
-// Animation Loop
-let orbitalParam = 0;
+// Animation Loop with Corrected Keplerian Velocity Profile (Fast at Pericenter, Slow at Apocenter)
+let meanAnomaly = 0;
 let cumulativePrecession = 0;
 
 function animate() {
     requestAnimationFrame(animate);
     
-    orbitalParam += 0.005;
-    let trueAnomaly = orbitalParam % (Math.PI * 2);
+    // Mean anomaly increment scaled inversely by squared radius distance to simulate Kepler's Second Law
+    let currentR = p / (1 + eccentricity * Math.cos(meanAnomaly));
+    let angularSpeed = 0.003 * Math.pow((p / currentR), 2); 
+    meanAnomaly = (meanAnomaly + angularSpeed) % (Math.PI * 2);
     
+    let trueAnomaly = meanAnomaly;
+
     if (trueAnomaly < 0.02) {
         cumulativePrecession += 0.04;
     }
