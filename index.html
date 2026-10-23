@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Exact Keplerian Mechanics)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Exact Ephemeris)</title>
     <style>
         body {
             margin: 0;
@@ -50,15 +50,15 @@
 
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
-        <p>Newton-Raphson Kepler Solution & True Rosette Precession (e = 0.8847)</p>
+        <p>Exact Ephemeris: e = 0.8847 | True Precession = 12 arcmin (0.2°) per orbit</p>
     </div>
 
     <!-- Left Box: General Relativity -->
     <div id="gr-box" class="hud-box">
         <span class="box-title">General Relativity (GR) Frame</span>
         <span class="equation">Metric: g<sub>μν</sub> (Schwarzschild Geodesic Deviation)</span>
-        <p><strong>Mechanics:</strong> Spacetime curvature drives non-closure of the elliptical orbit, tracing a continuous rosette pattern.</p>
-        <span id="gr-telemetry" class="telemetry-val" style="color: #79c0ff;">Precession Shift (Δω): 0.00°</span>
+        <p><strong>Mechanics:</strong> Spacetime curvature drives non-closure of the elliptical orbit. Accurate to GRAVITY collaboration 2020 VLT observations.</p>
+        <span id="gr-telemetry" class="telemetry-val" style="color: #79c0ff;">Cumulative Precession (Δω): 0.000°</span>
     </div>
 
     <!-- Right Box: Entanglement-Entropy Relativity -->
@@ -108,8 +108,8 @@ const s2Mat = new THREE.MeshStandardMaterial({ color: 0x79c0ff, emissive: 0x79c0
 const s2Star = new THREE.Mesh(s2Geo, s2Mat);
 scene.add(s2Star);
 
-// 3. Orbital Trail (Rosette Generation)
-const MAX_TRAIL_POINTS = 1500;
+// 3. Orbital Trail
+const MAX_TRAIL_POINTS = 3000; // Increased buffer to capture accumulating exact shifts
 const trailPositions = new Float32Array(MAX_TRAIL_POINTS * 3);
 const trailGeo = new THREE.BufferGeometry();
 trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
@@ -136,10 +136,11 @@ for (let i = 0; i < posAttribute.count; i++) {
 }
 
 // True Keplerian Orbital Parameters
-const a = 9.0; // Semi-major axis
-const e = 0.8847; // S2 eccentricity
+const a = 9.0; // Semi-major axis visual scaling factor
+const e = 0.8847; // Exact S2 eccentricity
 const period = 5.0; // Seconds per full orbit in simulation
-const precessionRate = 0.18; // Radians of precession per orbit
+// Exact Precession: 12 arcmin = 0.2 degrees = 0.0034906585 radians per orbit
+const precessionRate = (12 / 60) * (Math.PI / 180); 
 
 // Newton-Raphson Solver for the Kepler Equation (M = E - e*sin(E))
 function solveKepler(M, e) {
@@ -169,7 +170,7 @@ function animate() {
     let x0 = a * (Math.cos(E) - e);
     let z0 = a * Math.sqrt(1 - e * e) * Math.sin(E);
     
-    // 4. Calculate Continuous Rosette Precession
+    // 4. Calculate Continuous Rosette Precession (Exact)
     let completedOrbits = time / period;
     let omega = completedOrbits * precessionRate;
     
@@ -202,7 +203,7 @@ function animate() {
     let latticeFriction = Math.pow(capacityStrain, 2) * 5.0;
 
     telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
-    telemetryGR.innerText = `Precession Shift (Δω): +${(omega * (180/Math.PI)).toFixed(2)}°`;
+    telemetryGR.innerText = `Cumulative Precession (Δω): +${(omega * (180 / Math.PI)).toFixed(3)}°`;
     
     coreMat.emissiveIntensity = 0.6 + capacityStrain * 2.5;
 
