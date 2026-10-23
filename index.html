@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Relativistic Precession & Sgr A* Mechanics</title>
+    <title>EER vs GR: S2 Orbital Mechanics & Sgr A* Focus</title>
     <style>
         body {
             margin: 0;
@@ -50,7 +50,7 @@
 
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
-        <p>High-Eccentricity Rosette Precession (e = 0.8847, Period = 16.05 yrs)</p>
+        <p>Corrected Keplerian Focus (e = 0.8847) & Relativistic Precession</p>
     </div>
 
     <!-- Left Box: General Relativity -->
@@ -98,7 +98,7 @@ const pointLight = new THREE.PointLight(0x33ff88, 2.5, 50);
 pointLight.position.set(0, 10, 0);
 scene.add(pointLight);
 
-// 1. Central Sgr A* Core Node
+// 1. Central Sgr A* Core Node (Placed exactly at origin / primary focus)
 const coreGeo = new THREE.SphereGeometry(0.8, 32, 32);
 const coreMat = new THREE.MeshStandardMaterial({ color: 0xffa657, emissive: 0xffa657, emissiveIntensity: 0.9 });
 const sgrA = new THREE.Mesh(coreGeo, coreMat);
@@ -114,15 +114,13 @@ scene.add(s2Star);
 // 3. S2 True Orbital Parameters (Eccentricity e = 0.8847)
 const semiMajor = 8.5;
 const eccentricity = 0.8847;
-const semiMinor = semiMajor * Math.sqrt(1 - eccentricity * eccentricity);
-const focusOffset = semiMajor * eccentricity; // True Keplerian focus placement
 
-// Generate static reference orbit trace
+// Generate static reference orbit trace with focus at (0,0,0)
 const curvePoints = [];
 for (let i = 0; i <= 200; i++) {
     let theta = (i / 200) * Math.PI * 2;
     let r = (semiMajor * (1 - eccentricity * eccentricity)) / (1 + eccentricity * Math.cos(theta));
-    let x = r * Math.cos(theta) - focusOffset;
+    let x = r * Math.cos(theta);
     let z = r * Math.sin(theta);
     curvePoints.push(new THREE.Vector3(x, 0, z));
 }
@@ -154,33 +152,33 @@ for (let i = 0; i < posAttribute.count; i++) {
 
 const telemetryEER = document.getElementById('eer-telemetry');
 
-// Animation Loop with Relativistic Rosette Precession & True Keplerian Anomaly
+// Animation Loop with Relativistic Rosette Precession & Focus-Locked Orbit
 let orbitalParam = 0;
 let cumulativePrecession = 0;
 
 function animate() {
     requestAnimationFrame(animate);
     
-    // Keplerian speed adjustment (extreme acceleration at pericenter)
-    orbitalParam += 0.006;
+    // Keplerian speed adjustment (extreme acceleration at pericenter when r is smallest)
+    orbitalParam += 0.005;
     let trueAnomaly = orbitalParam % (Math.PI * 2);
     
     // Advance pericenter argument slightly each orbit to model relativistic rosette precession
     if (trueAnomaly < 0.02) {
-        cumulativePrecession += 0.04; // Visualized precession advance per revolution
+        cumulativePrecession += 0.04;
     }
 
     let r = (semiMajor * (1 - eccentricity * eccentricity)) / (1 + eccentricity * Math.cos(trueAnomaly));
     
-    // Apply rotating periapsis angle (precession)
+    // Apply rotating periapsis angle around the focus at origin (0,0,0)
     let rotatedTheta = trueAnomaly + cumulativePrecession;
-    let s2X = r * Math.cos(rotatedTheta) - focusOffset;
+    let s2X = r * Math.cos(rotatedTheta);
     let s2Z = r * Math.sin(rotatedTheta);
     s2Star.position.set(s2X, 0, s2Z);
 
     // EER Telemetry based on distance from core focus
-    let distToCore = Math.sqrt((s2X + focusOffset)*(s2X + focusOffset) + s2Z*s2Z);
-    let capacityStrain = Math.max(0, 1.0 - (distToCore / 5.0));
+    let distToCore = Math.sqrt(s2X * s2X + s2Z * s2Z);
+    let capacityStrain = Math.max(0, 1.0 - (distToCore / 4.0));
     let latticeFriction = Math.pow(capacityStrain, 3) * 3.2;
 
     telemetryEER.innerText = `Pericenter Strain (Υ): ${capacityStrain.toFixed(3)} | Lattice Friction: ${latticeFriction.toFixed(3)}`;
