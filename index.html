@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2775.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;EER vs GR: S2 Star &amp; Sgr A* Orbital Mechanics&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #030508;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #c9d1d9;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#info {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateX(-50%);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 10;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>h2 { margin: 0 0 3px 0; color: #58a6ff; font-size: 18px; text-shadow: 0 0 10px rgba(88,166,255,0.4); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>p { margin: 0; font-size: 12px; color: #8b949e; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Side-by-Side Comparison Boxes */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.hud-box {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 340px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(13, 17, 23, 0.92);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #30363d;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 14px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.4;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 30px rgba(0,0,0,0.6);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#gr-box { left: 20px; border-left: 3px solid #79c0ff; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#eer-box { right: 20px; border-left: 3px solid #33ff88; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.box-title { font-weight: bold; font-size: 13px; margin-bottom: 6px; display: block; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#gr-box .box-title { color: #79c0ff; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#eer-box .box-title { color: #33ff88; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.equation { font-family: monospace; color: #d2a8ff; margin: 4px 0; display: block; font-size: 11px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Astrophysical Frame Comparison: S2 Orbiting Sgr A*&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Identical Observable Kinematics — Distinct Underlying Mechanics&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Left Box: General Relativity --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="hud-box gr-box" class="hud-box" style="left: 20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="box-title"&gt;General Relativity (GR)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="equation"&gt;Metric: g&lt;sub&gt;μν&lt;/sub&gt; &amp; T&lt;sub&gt;μν&lt;/sub&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;&lt;strong&gt;Framework:&lt;/strong&gt; Continuous Spacetime Curvature&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style="margin-top: 6px; color: #8b949e;"&gt;S2 traces a geodesic through a warped metric created by a central mass-energy singularity.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Right Box: Entanglement-Entropy Relativity --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="hud-box eer-box" class="hud-box" style="right: 20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="box-title"&gt;Entanglement-Entropy Relativity (EER)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="equation"&gt;Strain: Υ &amp; Lattice Friction (σ)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;&lt;strong&gt;Framework:&lt;/strong&gt; 2D Causal Pseudomanifold&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style="margin-top: 6px; color: #8b949e;"&gt;S2 trajectory is governed by discrete capacity-friction gradients near the LeBlanc Bound (σ&lt;sub&gt;LB&lt;/sub&gt;).&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Include Three.js &amp; OrbitControls via CDN --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"&gt;&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">// Scene Setup</p>
+<p class="p1">const scene = new THREE.Scene();</p>
+<p class="p1">scene.fog = new THREE.FogExp2(0x030508, 0.035);</p>
+<p class="p2"><br></p>
+<p class="p1">const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);</p>
+<p class="p1">camera.position.set(0, 14, 20);</p>
+<p class="p2"><br></p>
+<p class="p1">const renderer = new THREE.WebGLRenderer({ antialias: true });</p>
+<p class="p1">renderer.setSize(window.innerWidth, window.innerHeight);</p>
+<p class="p1">renderer.setPixelRatio(window.devicePixelRatio);</p>
+<p class="p1">document.body.appendChild(renderer.domElement);</p>
+<p class="p2"><br></p>
+<p class="p1">const controls = new THREE.OrbitControls(camera, renderer.domElement);</p>
+<p class="p1">controls.enableDamping = true;</p>
+<p class="p1">controls.dampingFactor = 0.05;</p>
+<p class="p2"><br></p>
+<p class="p1">// Lighting</p>
+<p class="p1">const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);</p>
+<p class="p1">scene.add(ambientLight);</p>
+<p class="p2"><br></p>
+<p class="p1">const pointLight = new THREE.PointLight(0x33ff88, 2.5, 50);</p>
+<p class="p1">pointLight.position.set(0, 10, 0);</p>
+<p class="p1">scene.add(pointLight);</p>
+<p class="p2"><br></p>
+<p class="p1">// 1. Central Sgr A* Core Node (High-Capacity Lattice Knot)</p>
+<p class="p1">const coreGeo = new THREE.SphereGeometry(1.0, 32, 32);</p>
+<p class="p1">const coreMat = new THREE.MeshStandardMaterial({ color: 0xffa657, emissive: 0xffa657, emissiveIntensity: 0.8 });</p>
+<p class="p1">const sgrA = new THREE.Mesh(coreGeo, coreMat);</p>
+<p class="p1">sgrA.position.set(0, 0, 0);</p>
+<p class="p1">scene.add(sgrA);</p>
+<p class="p2"><br></p>
+<p class="p1">// 2. Star S2 Orbiting the Core</p>
+<p class="p1">const s2Geo = new THREE.SphereGeometry(0.4, 32, 32);</p>
+<p class="p1">const s2Mat = new THREE.MeshStandardMaterial({ color: 0x79c0ff, emissive: 0x79c0ff, emissiveIntensity: 0.9 });</p>
+<p class="p1">const s2Star = new THREE.Mesh(s2Geo, s2Mat);</p>
+<p class="p1">scene.add(s2Star);</p>
+<p class="p2"><br></p>
+<p class="p1">// 3. Orbital Path Ring</p>
+<p class="p1">const orbitRadiusX = 7.0;</p>
+<p class="p1">const orbitRadiusZ = 4.5;</p>
+<p class="p1">const curvePoints = [];</p>
+<p class="p1">for (let i = 0; i &lt;= 100; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let theta = (i / 100) * Math.PI * 2;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>curvePoints.push(new THREE.Vector3(Math.cos(theta) * orbitRadiusX, 0, Math.sin(theta) * orbitRadiusZ));</p>
+<p class="p1">}</p>
+<p class="p1">const orbitGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);</p>
+<p class="p1">const orbitMat = new THREE.LineBasicMaterial({ color: 0x30363d });</p>
+<p class="p1">const orbitLine = new THREE.Line(orbitGeo, orbitMat);</p>
+<p class="p1">scene.add(orbitLine);</p>
+<p class="p2"><br></p>
+<p class="p1">// 4. Deformable Pseudomanifold Grid</p>
+<p class="p1">const gridDim = 24;</p>
+<p class="p1">const planeGeo = new THREE.PlaneGeometry(gridDim, gridDim, 28, 28);</p>
+<p class="p1">planeGeo.rotateX(-Math.PI / 2);</p>
+<p class="p2"><br></p>
+<p class="p1">const planeMat = new THREE.MeshStandardMaterial({</p>
+<p class="p1"><span class="Apple-converted-space">    </span>color: 0x05140a,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>emissive: 0x22ee77,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>emissiveIntensity: 0.5,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>wireframe: true,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>side: THREE.DoubleSide</p>
+<p class="p1">});</p>
+<p class="p1">const gridMesh = new THREE.Mesh(planeGeo, planeMat);</p>
+<p class="p1">scene.add(gridMesh);</p>
+<p class="p2"><br></p>
+<p class="p1">const posAttribute = planeGeo.attributes.position;</p>
+<p class="p1">const initialY = [];</p>
+<p class="p1">for (let i = 0; i &lt; posAttribute.count; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>initialY.push(posAttribute.getY(i));</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// Animation Loop</p>
+<p class="p1">let clock = 0;</p>
+<p class="p1">function animate() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>requestAnimationFrame(animate);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>clock += 0.010;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Elliptical orbit calculation for S2</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let angle = clock * 0.6;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let s2X = Math.cos(angle) * orbitRadiusX;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let s2Z = Math.sin(angle) * orbitRadiusZ;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>s2Star.position.set(s2X, 0, s2Z);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Dynamic grid lattice deformation around Sgr A* and S2</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; posAttribute.count; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let vx = posAttribute.getX(i);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let vz = posAttribute.getZ(i);</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let distCore = Math.sqrt(vx * vx + vz * vz);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let distS2 = Math.sqrt(Math.pow(vx - s2X, 2) + Math.pow(vz - s2Z, 2));</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let coreDeflection = Math.max(0, (3.5 - distCore)) * 0.8;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let s2Deflection = Math.max(0, (1.5 - distS2)) * 0.3;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>posAttribute.setY(i, initialY[i] - coreDeflection - s2Deflection);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>posAttribute.needsUpdate = true;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>controls.update();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderer.render(scene, camera);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">animate();</p>
+<p class="p2"><br></p>
+<p class="p1">window.addEventListener('resize', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>camera.aspect = window.innerWidth / window.innerHeight;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>camera.updateProjectionMatrix();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderer.setSize(window.innerWidth, window.innerHeight);</p>
+<p class="p1">});</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
