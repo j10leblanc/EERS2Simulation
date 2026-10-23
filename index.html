@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EER vs GR: S2 Orbiting Sgr A* (Live State Translation)</title>
+    <title>EER vs GR: S2 Orbiting Sgr A* (Live State Translation & Terminology)</title>
     <style>
         body {
             margin: 0;
@@ -39,13 +39,15 @@
         #gr-box { bottom: 20px; left: 20px; width: 380px; border-left: 3px solid #79c0ff; }
         #eer-box { bottom: 20px; right: 20px; width: 380px; border-left: 3px solid #33ff88; }
         
-        /* Top Equivalency Matrix */
+        /* Top Boxes */
+        #eer-def-box { top: 20px; left: 20px; width: 340px; border-left: 3px solid #33ff88; }
         #equiv-box { top: 20px; right: 20px; width: 340px; border-left: 3px solid #d2a8ff; }
         
         .box-title { font-weight: bold; font-size: 13px; margin-bottom: 6px; display: block; }
         #gr-box .box-title { color: #79c0ff; }
         #eer-box .box-title { color: #33ff88; }
         #equiv-box .box-title { color: #d2a8ff; text-align: center; margin-bottom: 12px; }
+        #eer-def-box .box-title { color: #33ff88; text-align: center; margin-bottom: 12px; }
         
         .equation { font-family: monospace; color: #d2a8ff; margin: 4px 0; display: block; font-size: 11px; }
         .telemetry-val { font-family: monospace; color: #33ff88; margin-top: 6px; display: block; font-size: 11px; }
@@ -57,6 +59,12 @@
         .equiv-eer { color: #33ff88; text-align: left; width: 45%; font-family: monospace;}
         .equiv-arrow { color: #8b949e; width: 10%; text-align: center; }
         .equiv-desc { margin-top: 10px; font-size: 10px; color: #8b949e; text-align: center; border-top: 1px dashed #30363d; padding-top: 8px;}
+
+        /* EER Def Rows */
+        .def-row { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #30363d; }
+        .def-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .def-term { color: #33ff88; font-weight: bold; display: block; margin-bottom: 2px; }
+        .def-desc { color: #8b949e; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -64,6 +72,23 @@
     <div id="info">
         <h2>Astrophysical Frame Comparison: S2 Orbiting Sgr A*</h2>
         <p>Exact Ephemeris: e = 0.8847 | True Precession = 12 arcmin (0.2°) per orbit</p>
+    </div>
+
+    <!-- Top Left: EER Terminology Dictionary -->
+    <div id="eer-def-box" class="hud-box">
+        <span class="box-title">EER Terminology (Bit Perfection)</span>
+        <div class="def-row">
+            <span class="def-term">Depth (Lattice Layers)</span>
+            <span class="def-desc">Discrete integer count of causal network layers from the core node. Replaces continuous spatial distance (r).</span>
+        </div>
+        <div class="def-row">
+            <span class="def-term">Sector (Manifold Address)</span>
+            <span class="def-desc">Quantized angular coordinate mapped to the 2D holographic boundary. Replaces continuous angle (θ).</span>
+        </div>
+        <div class="def-row">
+            <span class="def-term">Inst/Tick (Instantiations)</span>
+            <span class="def-desc">State-updates per causal network tick. Motion is not continuous translation, but discrete instantiations. Replaces continuous velocity (v).</span>
+        </div>
     </div>
 
     <!-- Top Right: Live Translation Matrix -->
@@ -85,7 +110,7 @@
             <span class="equiv-eer">Inst/Tick: <span id="eer-inst">0</span></span>
         </div>
         <div class="equiv-desc">
-            Mapping continuous floating-point spacetime geometry (GR) to discrete lattice state-instantiations (EER Bit Perfection).
+            Mapping continuous floating-point spacetime geometry (GR) to discrete causal network state-instantiations (EER).
         </div>
     </div>
 
